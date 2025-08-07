@@ -1,9 +1,10 @@
 {
   "name": "pica-resize-image",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "A resize image plugin for Pica",
   "main": "dist/index.js",
   "module": "dist/index.js",
+  "browser": "dist/index.js",
   "types": "dist/index.d.ts",
   "type": "module",
   "repository": {
@@ -23,7 +24,7 @@
     "dist"
   ],
   "scripts": {
-    "build": "bun build ./src/index.ts --outdir ./dist --target node && cp ./src/index.d.ts ./dist/"
+    "build": "bun build ./src/index.ts --outdir ./dist --target browser --format esm --external pica && cp ./src/index.d.ts ./dist/"
   },
   "keywords": [
     "pica",
@@ -33,13 +34,11 @@
   ],
   "license": "MIT",
   "devDependencies": {
-    "@types/bun": "latest"
+    "@types/bun": "latest",
+    "@types/pica": "^9.0.5"
   },
   "peerDependencies": {
-    "typescript": "^5.8.3"
-  },
-  "dependencies": {
-    "@types/pica": "^9.0.5",
+    "typescript": "^5.8.3",
     "pica": "^9.0.1"
   }
 }

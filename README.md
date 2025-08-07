@@ -26,6 +26,97 @@ bun add pica-resize-image
 - ✅ Tương thích với Vue, React, Angular và các framework frontend khác
 - ✅ Chỉ hoạt động trong môi trường browser
 
+## Setup và Configuration
+
+### Vue.js
+
+#### Vue 3 (Composition API)
+
+```HTML
+<!-- App.vue -->
+<template>
+  <div>
+    <input type="file" @change="handleFileUpload" accept="image/*" />
+    <div v-if="preview" class="preview">
+      <img :src="preview" alt="Preview" />
+    </div>
+  </div>
+</template>
+
+<script setup lang="ts">
+import { ref } from "vue";
+import { resizeImage, MIME_TYPE, OUTPUT_TYPE } from "pica-resize-image";
+
+const preview = ref<string>("");
+
+const handleFileUpload = async (event: Event) => {
+  const input = event.target as HTMLInputElement;
+  const file = input.files?.[0];
+
+  if (file) {
+    try {
+      const resizedImage = await resizeImage(file, {
+        width: 800,
+        mimeType: MIME_TYPE.webp,
+        quality: 0.8,
+        output: OUTPUT_TYPE.base64,
+      });
+
+      preview.value = resizedImage as string;
+    } catch (error) {
+      console.error("Error resizing image:", error);
+    }
+  }
+};
+</script>
+```
+
+#### Vue 2 (Options API)
+
+```HTML
+<template>
+  <div>
+    <input type="file" @change="handleFileUpload" accept="image/*" />
+    <div v-if="preview" class="preview">
+      <img :src="preview" alt="Preview" />
+    </div>
+  </div>
+</template>
+
+<script>
+import { resizeImage, MIME_TYPE, OUTPUT_TYPE } from "pica-resize-image";
+
+export default {
+  data() {
+    return {
+      preview: "",
+    };
+  },
+  methods: {
+    async handleFileUpload(event) {
+      const input = event.target;
+      const file = input.files?.[0];
+
+      if (file) {
+        try {
+          const resizedImage = await resizeImage(file, {
+            width: 800,
+            mimeType: MIME_TYPE.webp,
+            quality: 0.8,
+            output: OUTPUT_TYPE.base64,
+          });
+
+          this.preview = resizedImage;
+        } catch (error) {
+          console.error("Error resizing image:", error);
+        }
+      }
+    },
+  },
+};
+</script>
+```
+
 ## Sử dụng
 
 ### Framework Support
@@ -33,6 +124,7 @@ bun add pica-resize-image
 Package này được thiết kế để hoạt động trong môi trường browser và tương thích với các framework frontend:
 
 - **Vue.js** (Vue 2, Vue 3)
+- **Nuxt.js** (Nuxt 2, Nuxt 3)
 - **React**
 - **Angular**
 - **Svelte**
