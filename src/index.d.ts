@@ -12,6 +12,7 @@ export const MIME_TYPE: Record<string, MimeType>;
 export type ResizeImageOptions = {
   width?: number;
   height?: number;
+  cover?: boolean;
   mimeType?: MimeType;
   quality?: number;
   output?: OutputType;

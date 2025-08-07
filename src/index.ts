@@ -31,6 +31,59 @@ export const MIME_TYPE: Record<string, MimeType> = {
 type ReadFileBeforeResizeOptions = {
   width?: number;
   height?: number;
+  cover?: boolean;
+};
+
+const coverImage = (
+  image: HTMLImageElement,
+  options: ReadFileBeforeResizeOptions
+): Promise<HTMLImageElement> => {
+  const targetRatio = options.width! / options.height!;
+  const imageRatio = image.width / image.height;
+
+  let cropWidth, cropHeight, cropX, cropY;
+
+  if (imageRatio > targetRatio) {
+    // Ảnh rộng hơn, cần crop theo chiều rộng
+    cropHeight = image.height;
+    cropWidth = image.height * targetRatio;
+    cropX = (image.width - cropWidth) / 2;
+    cropY = 0;
+  } else {
+    // Ảnh cao hơn, cần crop theo chiều cao
+    cropWidth = image.width;
+    cropHeight = image.width / targetRatio;
+    cropX = 0;
+    cropY = (image.height - cropHeight) / 2;
+  }
+
+  // Tạo canvas tạm để crop
+  const tempCanvas = document.createElement("canvas");
+  const tempCtx = tempCanvas.getContext("2d")!;
+  tempCanvas.width = cropWidth;
+  tempCanvas.height = cropHeight;
+
+  // Crop ảnh
+  tempCtx.drawImage(
+    image,
+    cropX,
+    cropY,
+    cropWidth,
+    cropHeight,
+    0,
+    0,
+    cropWidth,
+    cropHeight
+  );
+
+  // Tạo ảnh mới từ phần đã crop
+  const croppedImage = new Image();
+  croppedImage.src = tempCanvas.toDataURL();
+
+  return new Promise((resolve, reject) => {
+    croppedImage.onload = () => resolve(croppedImage);
+    croppedImage.onerror = (error) => reject(error);
+  });
 };
 
 const readFileBeforeResize = (
@@ -43,25 +96,37 @@ const readFileBeforeResize = (
 
   return new Promise<{ from: HTMLImageElement; to: HTMLCanvasElement }>(
     (resolve, reject) => {
-      image.onload = () => {
+      image.onload = async () => {
         if (!options) {
           const percent = 100 / image.height;
           canvas.width = percent * image.width;
           canvas.height = 100;
+
+          return resolve({ from: image, to: canvas });
+        } else if (options.width && options.height && options.cover) {
+          const croppedImage = await coverImage(image, options);
+          canvas.width = options.width;
+          canvas.height = options.height;
+
+          return resolve({ from: croppedImage, to: canvas });
         } else if (options.width && options.height) {
           canvas.width = options.width;
           canvas.height = options.height;
+
+          return resolve({ from: image, to: canvas });
         } else if (options.width) {
           const percent = options.width / image.width;
           canvas.width = options.width;
           canvas.height = percent * image.height;
+
+          return resolve({ from: image, to: canvas });
         } else if (options.height) {
           const percent = options.height / image.height;
           canvas.width = percent * options.height;
           canvas.height = options.height;
-        }
 
-        resolve({ from: image, to: canvas });
+          return resolve({ from: image, to: canvas });
+        }
       };
 
       image.onerror = (error) => reject(error);
@@ -117,6 +182,7 @@ const resize = ({ from, to, mimeType, quality, output }: ResizeType) => {
 export type ResizeImageOptions = {
   width?: number;
   height?: number;
+  cover?: boolean;
   mimeType?: MimeType;
   quality?: number;
   output?: OutputType;

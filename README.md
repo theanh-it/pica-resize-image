@@ -23,6 +23,7 @@ bun add pica-resize-image
 - ✅ Resize một ảnh hoặc nhiều ảnh cùng lúc
 - ✅ Tùy chỉnh chất lượng ảnh
 - ✅ Tự động tính toán tỷ lệ khung hình
+- ✅ Hỗ trợ crop ảnh theo kiểu cover (giống CSS object-fit: cover)
 - ✅ Tương thích với Vue, React, Angular và các framework frontend khác
 - ✅ Chỉ hoạt động trong môi trường browser
 
@@ -162,6 +163,13 @@ const resizedFile = await resizeImage(imageFile, {
 const resizedFile = await resizeImage(imageFile, {
   height: 600,
 });
+
+// Resize với crop cover (giống CSS object-fit: cover)
+const resizedFile = await resizeImage(imageFile, {
+  width: 800,
+  height: 600,
+  cover: true, // Crop ảnh để vừa khít với kích thước đích
+});
 ```
 
 ### Resize nhiều ảnh
@@ -244,6 +252,7 @@ Resize nhiều ảnh với cùng tùy chọn.
 type ResizeImageOptions = {
   width?: number; // Chiều rộng mới (px)
   height?: number; // Chiều cao mới (px)
+  cover?: boolean; // Crop ảnh theo kiểu cover (giống CSS object-fit: cover)
   mimeType?: MimeType; // Định dạng đầu ra
   quality?: number; // Chất lượng (0-1)
   output?: OutputType; // Kiểu đầu ra
@@ -310,6 +319,18 @@ const handleImageUpload = async (event: Event) => {
       });
 
       console.log("Preview:", preview);
+
+      // Tạo ảnh cover cho banner
+      const bannerImage = await resizeImage(file, {
+        width: 1200,
+        height: 400,
+        cover: true, // Crop ảnh để vừa khít với kích thước banner
+        mimeType: MIME_TYPE.webp,
+        quality: 0.9,
+        output: OUTPUT_TYPE.file,
+      });
+
+      console.log("Banner image created:", bannerImage);
     } catch (error) {
       console.error("Error resizing image:", error);
     }
@@ -408,6 +429,7 @@ export default ImageUploader;
 - **Chỉ hoạt động trong môi trường browser** - không thể sử dụng trong Node.js server-side
 - Mặc định sẽ resize ảnh thành chiều cao 100px và giữ tỷ lệ khung hình
 - Nếu chỉ cung cấp `width` hoặc `height`, chiều còn lại sẽ được tính tự động để giữ tỷ lệ
+- Khi sử dụng `cover: true`, ảnh sẽ được crop để vừa khít với kích thước đích (giống CSS `object-fit: cover`)
 - Chất lượng mặc định là 1.0 (chất lượng cao nhất)
 - Định dạng mặc định là WebP
 - Tên file được tạo tự động với timestamp và extension tương ứng với định dạng được chọn
