@@ -1,0 +1,44 @@
+{
+  "name": "pica-resize-image",
+  "version": "0.0.1",
+  "description": "A resize image plugin for Pica",
+  "main": "dist/index.js",
+  "module": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "type": "module",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/theanh-it/pica-resize-image.git"
+  },
+  "homepage": "https://github.com/theanh-it/pica-resize-image#readme",
+  "bugs": {
+    "url": "https://github.com/theanh-it/pica-resize-image/issues"
+  },
+  "author": {
+    "name": "The Anh",
+    "email": "theanhit.com@gmail.com",
+    "url": "https://github.com/theanh-it"
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "bun build ./src/index.ts --outdir ./dist --target node"
+  },
+  "keywords": [
+    "pica",
+    "resize",
+    "image",
+    "resize-image"
+  ],
+  "license": "MIT",
+  "devDependencies": {
+    "@types/bun": "latest"
+  },
+  "peerDependencies": {
+    "typescript": "^5.8.3"
+  },
+  "dependencies": {
+    "@types/pica": "^9.0.5"
+  }
+}
