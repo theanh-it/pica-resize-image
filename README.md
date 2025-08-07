@@ -23,8 +23,20 @@ bun add pica-resize-image
 - ✅ Resize một ảnh hoặc nhiều ảnh cùng lúc
 - ✅ Tùy chỉnh chất lượng ảnh
 - ✅ Tự động tính toán tỷ lệ khung hình
+- ✅ Tương thích với Vue, React, Angular và các framework frontend khác
+- ✅ Chỉ hoạt động trong môi trường browser
 
 ## Sử dụng
+
+### Framework Support
+
+Package này được thiết kế để hoạt động trong môi trường browser và tương thích với các framework frontend:
+
+- **Vue.js** (Vue 2, Vue 3)
+- **React**
+- **Angular**
+- **Svelte**
+- **Vanilla JavaScript**
 
 ### Import
 
@@ -176,6 +188,8 @@ const OUTPUT_TYPE = {
 
 ## Ví dụ hoàn chỉnh
 
+### Vanilla JavaScript
+
 ```typescript
 import { resizeImage, MIME_TYPE, OUTPUT_TYPE } from "pica-resize-image";
 
@@ -211,9 +225,95 @@ const handleImageUpload = async (event: Event) => {
 };
 ```
 
+### Vue.js
+
+```vue
+<template>
+  <div>
+    <input type="file" @change="handleFileUpload" accept="image/*" />
+    <div v-if="preview" class="preview">
+      <img :src="preview" alt="Preview" />
+    </div>
+  </div>
+</template>
+
+<script setup lang="ts">
+import { ref } from "vue";
+import { resizeImage, MIME_TYPE, OUTPUT_TYPE } from "pica-resize-image";
+
+const preview = ref<string>("");
+
+const handleFileUpload = async (event: Event) => {
+  const input = event.target as HTMLInputElement;
+  const file = input.files?.[0];
+
+  if (file) {
+    try {
+      const resizedImage = await resizeImage(file, {
+        width: 800,
+        mimeType: MIME_TYPE.webp,
+        quality: 0.8,
+        output: OUTPUT_TYPE.base64,
+      });
+
+      preview.value = resizedImage as string;
+    } catch (error) {
+      console.error("Error resizing image:", error);
+    }
+  }
+};
+</script>
+```
+
+### React
+
+```tsx
+import React, { useState } from "react";
+import { resizeImage, MIME_TYPE, OUTPUT_TYPE } from "pica-resize-image";
+
+const ImageUploader: React.FC = () => {
+  const [preview, setPreview] = useState<string>("");
+
+  const handleFileUpload = async (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const file = event.target.files?.[0];
+
+    if (file) {
+      try {
+        const resizedImage = await resizeImage(file, {
+          width: 800,
+          mimeType: MIME_TYPE.webp,
+          quality: 0.8,
+          output: OUTPUT_TYPE.base64,
+        });
+
+        setPreview(resizedImage as string);
+      } catch (error) {
+        console.error("Error resizing image:", error);
+      }
+    }
+  };
+
+  return (
+    <div>
+      <input type="file" onChange={handleFileUpload} accept="image/*" />
+      {preview && (
+        <div className="preview">
+          <img src={preview} alt="Preview" />
+        </div>
+      )}
+    </div>
+  );
+};
+
+export default ImageUploader;
+```
+
 ## Lưu ý
 
 - Package này sử dụng thư viện Pica để đảm bảo chất lượng resize tốt nhất
+- **Chỉ hoạt động trong môi trường browser** - không thể sử dụng trong Node.js server-side
 - Mặc định sẽ resize ảnh thành chiều cao 100px và giữ tỷ lệ khung hình
 - Nếu chỉ cung cấp `width` hoặc `height`, chiều còn lại sẽ được tính tự động để giữ tỷ lệ
 - Chất lượng mặc định là 1.0 (chất lượng cao nhất)

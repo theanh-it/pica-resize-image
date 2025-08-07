@@ -23,7 +23,7 @@
     "dist"
   ],
   "scripts": {
-    "build": "bun build ./src/index.ts --outdir ./dist --target node"
+    "build": "bun build ./src/index.ts --outdir ./dist --target node && cp ./src/index.d.ts ./dist/"
   },
   "keywords": [
     "pica",
